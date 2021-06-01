@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@color/fragmentBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/detailMovieTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/detail_margin_top"
+        android:layout_marginStart="@dimen/details_margin_start"
+        android:padding="@dimen/padding"
+        android:text="@string/default_movie_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/detailMovieImage"
+        android:layout_width="@dimen/cardWidth"
+        android:layout_height="@dimen/imageHeight"
+        android:layout_marginTop="@dimen/detail_margin_top"
+        android:layout_marginStart="@dimen/details_margin_start"
+        android:padding="@dimen/padding"
+        android:scaleType="centerCrop"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailMovieTitle" />
+
+    <TextView
+        android:id="@+id/detailOverviewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/detail_margin_top"
+        android:layout_marginStart="@dimen/details_margin_start"
+        android:text="@string/default_movie_overview"
+        android:padding="@dimen/padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailMovieImage" />
+
+    <TextView
+        android:id="@+id/detailReleaseDateTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/detail_margin_top"
+        android:layout_marginStart="@dimen/details_margin_start"
+        android:padding="@dimen/padding"
+        android:text="@string/default_release_date"
+        app:layout_constraintStart_toEndOf="@id/detailMovieImage"
+        app:layout_constraintTop_toBottomOf="@id/detailMovieTitle" />
+
+    <TextView
+        android:id="@+id/detailVoteAverageDateTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/detail_margin_top"
+        android:layout_marginStart="@dimen/details_margin_start"
+        android:padding="@dimen/padding"
+        android:text="@string/default_release_date"
+        app:layout_constraintStart_toEndOf="@id/detailMovieImage"
+        app:layout_constraintTop_toBottomOf="@id/detailReleaseDateTitle" />
+
+    <Button
+        android:id="@+id/retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/retry"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
