@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviedbjm.R
 import com.example.moviedbjm.databinding.MainFragmentBinding
 import com.example.moviedbjm.domain.MovieRepositoryImpl
-import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.router.RouterHolder
+import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.viewBinding
 import com.example.moviedbjm.visibleOrGone
 
