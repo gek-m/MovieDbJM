@@ -2,10 +2,22 @@ package com.example.moviedbjm.domain
 
 import android.os.Handler
 import android.os.Looper
+import com.example.moviedbjm.BuildConfig
+import com.example.moviedbjm.domain.responses.TmdbCategory
+import com.example.moviedbjm.domain.responses.parseToMovieList
+import com.google.gson.Gson
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.concurrent.Executor
 import kotlin.random.Random
 
 class MovieRepositoryImpl : MovieRepository {
+
+    companion object {
+        private const val SLEEP_TIME: Long = 100
+        private const val ERROR_MESSAGE = "Can't load data, please reload"
+        private const val READ_TIME_OUT: Int = 30_000
+    }
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
@@ -14,31 +26,35 @@ class MovieRepositoryImpl : MovieRepository {
         callback: (result: RepositoryResult<List<Movie>>) -> Unit
     ) {
         executor.execute {
-            Thread.sleep(SLEEP_TIME)
+            val url =
+                URL("${BuildConfig.BASE_URL}3/movie/popular?api_key=${BuildConfig.MOVIE_API_KEY}")
 
-            val isEverythingOk = Random.nextBoolean()
-            if (isEverythingOk) {
-                mainThreadHandler.post {
-                    callback(
-                        Success(getMovies())
+            val connection = url.openConnection() as HttpURLConnection
+            val gson = Gson()
+
+            try {
+                with(connection) {
+                    requestMethod = "GET"
+                    readTimeout = READ_TIME_OUT
+
+                    val response = gson.fromJson(
+                        inputStream.bufferedReader(),
+                        TmdbCategory::class.java
                     )
+
+                    mainThreadHandler.post {
+                        callback.invoke(Success(response.parseToMovieList()))
+                    }
+
                 }
-            } else {
+            } catch (ex: Exception) {
                 mainThreadHandler.post {
-                    callback(
-                        Error(RuntimeException(ERROR_MESSAGE))
-                    )
+                    callback.invoke(Error(ex))
                 }
+            } finally {
+                connection.disconnect()
             }
         }
-    }
-
-    private fun getMovies(): List<Movie> {
-        val localMoviesList = ArrayList<Movie>()
-        for (i in 1..10) {
-            localMoviesList.add(Movie(releaseDate = MovieDefaultValue.MOVIE_RELEASE_DATE + "# $i"))
-        }
-        return localMoviesList
     }
 
     override fun getMovieDetails(
@@ -63,11 +79,6 @@ class MovieRepositoryImpl : MovieRepository {
                 }
             }
         }
-    }
-
-    companion object {
-        private const val SLEEP_TIME: Long = 3000
-        private const val ERROR_MESSAGE = "Can't load data, please reload"
     }
 }
 
