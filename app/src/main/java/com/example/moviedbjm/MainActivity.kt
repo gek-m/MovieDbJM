@@ -1,5 +1,8 @@
 package com.example.moviedbjm
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -41,6 +44,22 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
             }
             false
         }
+    }
+
+    private val br: BroadcastReceiver = NetworkChangeReceiver()
+
+    override fun onStart() {
+        super.onStart()
+
+        IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).also {
+            this.registerReceiver(br, it)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        this.unregisterReceiver(br)
     }
 
     private fun loadFragment(fragment: Fragment) {
