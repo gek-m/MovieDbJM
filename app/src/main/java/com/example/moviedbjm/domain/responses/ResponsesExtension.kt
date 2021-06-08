@@ -14,7 +14,7 @@ fun TmdbCategory.parseToMovieList(): List<Movie> {
                     title = tmdbMovie.originalTitle,
                     releaseDate = tmdbMovie.releaseDate,
                     voteAverage = tmdbMovie.voteAverage,
-                    posterPath = "${BuildConfig.BASE_URL}t/p/w342${tmdbMovie.posterPath}",
+                    posterPath = "${BuildConfig.IMAGE_BASE_URL}t/p/w342${tmdbMovie.posterPath}",
                     overview = tmdbMovie.overview
                 )
             )
