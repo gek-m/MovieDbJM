@@ -3,11 +3,15 @@ package com.example.moviedbjm.domain
 import android.os.Handler
 import android.os.Looper
 import com.example.moviedbjm.BuildConfig
-import com.example.moviedbjm.domain.responses.TmdbCategory
-import com.example.moviedbjm.domain.responses.parseToMovieList
+import com.example.moviedbjm.network.responses.TmdbCategory
+import com.example.moviedbjm.network.responses.parseToMovieList
+import com.example.moviedbjm.network.CallException
+import com.example.moviedbjm.network.MovieTmdbMapApi
 import com.google.gson.Gson
-import java.net.HttpURLConnection
-import java.net.URL
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.Executor
 import kotlin.random.Random
 
@@ -16,45 +20,47 @@ class MovieRepositoryImpl : MovieRepository {
     companion object {
         private const val SLEEP_TIME: Long = 100
         private const val ERROR_MESSAGE = "Can't load data, please reload"
-        private const val READ_TIME_OUT: Int = 30_000
+        private const val API_POPULAR_CAT = "popular"
     }
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
+
 
     override fun getMovieList(
         executor: Executor,
         callback: (result: RepositoryResult<List<Movie>>) -> Unit
     ) {
-        executor.execute {
-            val url =
-                URL("${BuildConfig.BASE_URL}3/movie/popular?api_key=${BuildConfig.MOVIE_API_KEY}")
+        val gson = Gson()
 
-            val connection = url.openConnection() as HttpURLConnection
-            val gson = Gson()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        val mapApi: MovieTmdbMapApi = retrofit.create(MovieTmdbMapApi::class.java)
 
-            try {
-                with(connection) {
-                    requestMethod = "GET"
-                    readTimeout = READ_TIME_OUT
+        mapApi.getMovieList(API_POPULAR_CAT,BuildConfig.MOVIE_API_KEY).enqueue(
+            object : retrofit2.Callback<TmdbCategory> {
+                override fun onResponse(
+                    call: Call<TmdbCategory>,
+                    response: Response<TmdbCategory>
+                ) {
+                    if (response.isSuccessful) {
 
-                    val response = gson.fromJson(
-                        inputStream.bufferedReader(),
-                        TmdbCategory::class.java
-                    )
+                        response.body()?.let { movieResponse ->
+                            val movieList = movieResponse.parseToMovieList()
+                            callback.invoke(Success(movieList))
+                        }
 
-                    mainThreadHandler.post {
-                        callback.invoke(Success(response.parseToMovieList()))
+                    } else {
+                        callback.invoke(Error(CallException(response.code())))
                     }
+                }
 
+                override fun onFailure(call: Call<TmdbCategory>, t: Throwable) {
+                    callback.invoke(Error(t))
                 }
-            } catch (ex: Exception) {
-                mainThreadHandler.post {
-                    callback.invoke(Error(ex))
-                }
-            } finally {
-                connection.disconnect()
             }
-        }
+        )
     }
 
     override fun getMovieDetails(

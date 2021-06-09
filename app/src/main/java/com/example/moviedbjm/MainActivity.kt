@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
         }
     }
 
-    private val br: BroadcastReceiver = NetworkChangeReceiver()
+    /*private val br: BroadcastReceiver = NetworkChangeReceiver()
 
     override fun onStart() {
         super.onStart()
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
         super.onStop()
 
         this.unregisterReceiver(br)
-    }
+    }*/
 
     private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()

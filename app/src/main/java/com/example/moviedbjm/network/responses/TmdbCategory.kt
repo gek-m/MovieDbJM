@@ -1,4 +1,4 @@
-package com.example.moviedbjm.domain.responses
+package com.example.moviedbjm.network.responses
 
 import com.google.gson.annotations.SerializedName
 
