@@ -44,26 +44,5 @@ class DetailsViewModel(
 
             _loading.value = false
         }
-
-        /*repository.getMovieDetails(executor) {
-            when (it) {
-                is Success -> {
-                    val result: Movie = it.value
-                    _movie.value = result
-                    _error.value = null
-                }
-
-                is Error -> {
-                    _error.value = app.getString(R.string.error_text)
-                }
-            }
-
-            _loading.value = false
-        }*/
     }
-
-    /*override fun onCleared() {
-        super.onCleared()
-        executor.shutdown()
-    }*/
 }

@@ -60,7 +60,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.loading.collect{
+            viewModel.loading.collect {
                 viewBinding.progressBar.visibleOrGone(it)
             }
         }
@@ -75,36 +75,11 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.error.collect{
+            viewModel.error.collect {
                 val error = it
                 Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
-
-        /*viewModel.error.observe(viewLifecycleOwner) {
-            val error = it ?: return@observe
-
-            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-
-            with(viewBinding) {
-                topMovieList.visibility = View.GONE
-            }
-        }*/
-
-        /*viewModel.loading.observe(viewLifecycleOwner) {
-            viewBinding.progressBar.visibleOrGone(it)
-        }*/
-
-        /*viewModel.movies.observe(viewLifecycleOwner) {
-            adapter.apply {
-                setData(it)
-                notifyDataSetChanged()
-            }
-        }
-
-        viewModel.error.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-        }*/
     }
 }
 

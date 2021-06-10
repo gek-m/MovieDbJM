@@ -84,32 +84,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
                 }
             }
         }
-
-        /*viewModel.error.observe(viewLifecycleOwner) {
-            val error = it ?: return@observe
-            viewBinding.retry.visibility = View.VISIBLE
-            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-        }
-
-        viewModel.loading.observe(viewLifecycleOwner) {
-            viewBinding.progress.visibleOrGone(it)
-        }
-
-        viewModel.movie.observe(viewLifecycleOwner) {
-            val movie = arguments?.getParcelable<Movie>(BUNDLE_EXTRA) ?: return@observe
-
-            with(viewBinding) {
-                retry.visibility = View.GONE
-
-                detailMovieTitle.text = movie.title
-                detailOverviewTitle.text = movie.overview
-                detailReleaseDateTitle.text = movie.releaseDate
-                detailVoteAverageDateTitle.text = movie.voteAverage.toString()
-                Glide.with(detailMovieImage)
-                    .load(movie.posterPath)
-                    .into(detailMovieImage)
-            }
-        }*/
     }
 }
 
