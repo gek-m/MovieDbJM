@@ -4,45 +4,56 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.moviedbjm.R
 import com.example.moviedbjm.domain.Movie
 import com.example.moviedbjm.domain.MovieRepositoryImpl
 import com.example.moviedbjm.domain.Success
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val app: Application,
     private val repository: MovieRepositoryImpl
 ) : ViewModel() {
 
-    private val executor = Executors.newSingleThreadExecutor()
+    //private val executor = Executors.newSingleThreadExecutor()
 
-    private val _loadingLiveData = MutableLiveData(false)
-    private val _errorLiveData = MutableLiveData<String?>()
-    private val _moviesLiveData = MutableLiveData<List<Movie>>()
+    private val _loading = MutableStateFlow(false)
+    private val _error = MutableSharedFlow<String>()
+    private val _movies = MutableStateFlow<List<Movie>>(listOf())
 
-    val loadingLiveData: LiveData<Boolean> = _loadingLiveData
-    val errorLiveData: LiveData<String?> = _errorLiveData
-    val moviesLiveData: LiveData<List<Movie>> = _moviesLiveData
+    val loading: Flow<Boolean> = _loading
+    val error: Flow<String> = _error
+    val movies: Flow<List<Movie>> = _movies
 
     fun fetchMovies() {
 
-        _loadingLiveData.value = true
+        _loading.value = true
 
-        repository.getMovieList(executor) {
-            when (it) {
+        viewModelScope.launch {
+            val result = repository.getMovieListSuspend()
+
+            _loading.value = false
+
+            when (result) {
                 is Success -> {
-                    val result: List<Movie> = it.value
-                    _moviesLiveData.value = result
-                    _errorLiveData.value = null
+                    _movies.value = result.value
+                    //_error.emit("")
                 }
 
                 is Error -> {
-                    _errorLiveData.value = app.getString(R.string.error_text)
+                    _error.emit(app.getString(R.string.error_text))
                 }
             }
-
-            _loadingLiveData.value = false
         }
     }
+
+    /*override fun onCleared() {
+        super.onCleared()
+        executor.shutdown()
+    }*/
 }

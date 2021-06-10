@@ -70,4 +70,12 @@ class MovieRepositoryMock() : MovieRepository {
             }
         }
     }
+
+    override suspend fun getMovieListSuspend(): RepositoryResult<List<Movie>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getMovieDetailsSuspend(): RepositoryResult<Movie> {
+        TODO("Not yet implemented")
+    }
 }

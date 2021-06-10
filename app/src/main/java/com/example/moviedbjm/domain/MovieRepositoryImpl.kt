@@ -3,10 +3,10 @@ package com.example.moviedbjm.domain
 import android.os.Handler
 import android.os.Looper
 import com.example.moviedbjm.BuildConfig
-import com.example.moviedbjm.network.responses.TmdbCategory
-import com.example.moviedbjm.network.responses.parseToMovieList
 import com.example.moviedbjm.network.CallException
 import com.example.moviedbjm.network.MovieTmdbMapApi
+import com.example.moviedbjm.network.responses.TmdbCategory
+import com.example.moviedbjm.network.responses.parseToMovieList
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Response
@@ -38,7 +38,7 @@ class MovieRepositoryImpl : MovieRepository {
             .build()
         val mapApi: MovieTmdbMapApi = retrofit.create(MovieTmdbMapApi::class.java)
 
-        mapApi.getMovieList(API_POPULAR_CAT,BuildConfig.MOVIE_API_KEY).enqueue(
+        mapApi.getMovieList(API_POPULAR_CAT, BuildConfig.MOVIE_API_KEY).enqueue(
             object : retrofit2.Callback<TmdbCategory> {
                 override fun onResponse(
                     call: Call<TmdbCategory>,
@@ -85,6 +85,29 @@ class MovieRepositoryImpl : MovieRepository {
                 }
             }
         }
+    }
+
+    override suspend fun getMovieListSuspend(): RepositoryResult<List<Movie>> {
+        val gson = Gson()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        val mapApi: MovieTmdbMapApi = retrofit.create(MovieTmdbMapApi::class.java)
+
+        try {
+            val movieMapResponse = mapApi.getApiMovieListSuspend(API_POPULAR_CAT)
+            return Success(movieMapResponse.parseToMovieList())
+
+        } catch (ex: Exception) {
+            return Error(ex)
+        }
+
+    }
+
+    override suspend fun getMovieDetailsSuspend(): RepositoryResult<Movie> {
+        return Success(Movie())
     }
 }
 

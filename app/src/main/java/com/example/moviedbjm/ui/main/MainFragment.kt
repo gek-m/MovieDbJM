@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviedbjm.R
@@ -17,6 +18,7 @@ import com.example.moviedbjm.router.RouterHolder
 import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.viewBinding
 import com.example.moviedbjm.visibleOrGone
+import kotlinx.coroutines.flow.collect
 
 class MainFragment : Fragment(R.layout.main_fragment) {
 
@@ -54,11 +56,32 @@ class MainFragment : Fragment(R.layout.main_fragment) {
 
         viewBinding.swipeRefresh.setOnRefreshListener {
             viewModel.fetchMovies()
-
             viewBinding.swipeRefresh.isRefreshing = false
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner) {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.loading.collect{
+                viewBinding.progressBar.visibleOrGone(it)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.movies.collect {
+                adapter.apply {
+                    setData(it)
+                    notifyDataSetChanged()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.error.collect{
+                val error = it
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        /*viewModel.error.observe(viewLifecycleOwner) {
             val error = it ?: return@observe
 
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
@@ -66,22 +89,22 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             with(viewBinding) {
                 topMovieList.visibility = View.GONE
             }
-        }
+        }*/
 
-        viewModel.loadingLiveData.observe(viewLifecycleOwner) {
+        /*viewModel.loading.observe(viewLifecycleOwner) {
             viewBinding.progressBar.visibleOrGone(it)
-        }
+        }*/
 
-        viewModel.moviesLiveData.observe(viewLifecycleOwner) {
+        /*viewModel.movies.observe(viewLifecycleOwner) {
             adapter.apply {
                 setData(it)
                 notifyDataSetChanged()
             }
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner) {
+        viewModel.error.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-        }
+        }*/
     }
 }
 
