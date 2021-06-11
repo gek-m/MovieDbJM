@@ -1,5 +1,8 @@
 package com.example.moviedbjm
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -41,16 +44,23 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
             }
             false
         }
-
-        /*val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_settings
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)*/
     }
+
+    /*private val br: BroadcastReceiver = NetworkChangeReceiver()
+
+    override fun onStart() {
+        super.onStart()
+
+        IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).also {
+            this.registerReceiver(br, it)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        this.unregisterReceiver(br)
+    }*/
 
     private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
