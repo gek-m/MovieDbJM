@@ -15,4 +15,6 @@
     <string name="api_load_error">"Can't load data, please reload"</string>
     <string name="alert_dialog_message">No Connection</string>
     <string name="alert_dialog_title">Warning</string>
+    <string name="checkbox_adult_text">Include adult in search</string>
+    <string name="settings_fragment_title">This is Movie DB Settings</string>
 </resources>

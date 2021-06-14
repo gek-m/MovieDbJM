@@ -43,7 +43,7 @@ class MovieRepositoryConnection: MovieRepository {
                     )
 
                     mainThreadHandler.post {
-                        callback.invoke(Success(response.parseToMovieList()))
+                        callback.invoke(Success(response.parseToMovieList(false)))
                     }
 
                 }
@@ -81,7 +81,7 @@ class MovieRepositoryConnection: MovieRepository {
         }
     }
 
-    override suspend fun getMovieListSuspend(): RepositoryResult<List<Movie>> {
+    override suspend fun getMovieListSuspend(isAdult: Boolean): RepositoryResult<List<Movie>> {
         TODO("Not yet implemented")
     }
 

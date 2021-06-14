@@ -1,16 +1,10 @@
 package com.example.moviedbjm
 
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.example.moviedbjm.databinding.MainActivityBinding
 import com.example.moviedbjm.router.MainRouter
 import com.example.moviedbjm.router.RouterHolder
-import com.example.moviedbjm.ui.main.MainFragment
-import com.example.moviedbjm.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
@@ -34,11 +28,11 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
         navView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
-                    loadFragment(MainFragment())
+                    router.openMovieList()
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_settings -> {
-                    loadFragment(SettingsFragment())
+                    router.openSettings()
                     return@setOnNavigationItemSelectedListener true
                 }
             }
@@ -62,10 +56,10 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
         this.unregisterReceiver(br)
     }*/
 
-    private fun loadFragment(fragment: Fragment) {
+    /*private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
-    }
+    }*/
 }

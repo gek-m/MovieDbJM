@@ -15,6 +15,7 @@ import com.example.moviedbjm.R
 import com.example.moviedbjm.databinding.MainFragmentBinding
 import com.example.moviedbjm.domain.MovieRepositoryImpl
 import com.example.moviedbjm.router.RouterHolder
+import com.example.moviedbjm.storage.MovieStorage
 import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.viewBinding
 import com.example.moviedbjm.visibleOrGone
@@ -35,7 +36,10 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     )
 
     private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(requireActivity().application)
+        MainViewModelFactory(
+            application = requireActivity().application,
+            movieStorage = MovieStorage(requireContext())
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,9 +87,12 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     }
 }
 
-class MainViewModelFactory(private val application: Application) :
+class MainViewModelFactory(
+    private val application: Application,
+    private val movieStorage: MovieStorage
+) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        MainViewModel(application, MovieRepositoryImpl()) as T
+        MainViewModel(application, MovieRepositoryImpl(), movieStorage) as T
 }

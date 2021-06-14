@@ -14,6 +14,8 @@ data class TmdbMovie(
     @SerializedName("poster_path")
     val posterPath: String,
     @SerializedName("overview")
-    val overview: String
+    val overview: String,
+    @SerializedName("adult")
+    val adult: Boolean
 )
 

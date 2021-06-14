@@ -10,5 +10,6 @@ data class Movie(
     val releaseDate: String = MovieDefaultValue.MOVIE_RELEASE_DATE,
     val voteAverage: Double = MovieDefaultValue.MOVIE_VOTE_AVERAGE,
     val posterPath: String = MovieDefaultValue.MOVIE_POSTER_PATH,
-    val overview: String = MovieDefaultValue.MOVIE_OVERVIEW
+    val overview: String = MovieDefaultValue.MOVIE_OVERVIEW,
+    val adult: Boolean = false
 ): Parcelable

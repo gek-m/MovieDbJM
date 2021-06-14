@@ -71,7 +71,7 @@ class MovieRepositoryMock() : MovieRepository {
         }
     }
 
-    override suspend fun getMovieListSuspend(): RepositoryResult<List<Movie>> {
+    override suspend fun getMovieListSuspend(isAdult: Boolean): RepositoryResult<List<Movie>> {
         TODO("Not yet implemented")
     }
 

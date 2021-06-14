@@ -25,6 +25,7 @@ class MainRouter(private val activity: AppCompatActivity) {
     fun openSettings() {
         activity.supportFragmentManager.beginTransaction()
             .replace(R.id.container, SettingsFragment())
+            .addToBackStack("SettingsDetailsFragment")
             .commit()
     }
 }

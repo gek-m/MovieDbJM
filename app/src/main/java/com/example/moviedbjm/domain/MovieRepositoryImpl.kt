@@ -7,6 +7,7 @@ import com.example.moviedbjm.network.CallException
 import com.example.moviedbjm.network.MovieTmdbMapApi
 import com.example.moviedbjm.network.responses.TmdbCategory
 import com.example.moviedbjm.network.responses.parseToMovieList
+import com.example.moviedbjm.storage.MovieDao
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Response
@@ -15,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.Executor
 import kotlin.random.Random
 
-class MovieRepositoryImpl : MovieRepository {
+class MovieRepositoryImpl() : MovieRepository {
 
     companion object {
         private const val SLEEP_TIME: Long = 100
@@ -47,7 +48,7 @@ class MovieRepositoryImpl : MovieRepository {
                     if (response.isSuccessful) {
 
                         response.body()?.let { movieResponse ->
-                            val movieList = movieResponse.parseToMovieList()
+                            val movieList = movieResponse.parseToMovieList(false)
                             callback.invoke(Success(movieList))
                         }
 
@@ -87,7 +88,7 @@ class MovieRepositoryImpl : MovieRepository {
         }
     }
 
-    override suspend fun getMovieListSuspend(): RepositoryResult<List<Movie>> {
+    override suspend fun getMovieListSuspend(isAdult: Boolean): RepositoryResult<List<Movie>> {
         val gson = Gson()
 
         val retrofit = Retrofit.Builder()
@@ -98,7 +99,7 @@ class MovieRepositoryImpl : MovieRepository {
 
         try {
             val movieMapResponse = mapApi.getApiMovieListSuspend(API_POPULAR_CAT)
-            return Success(movieMapResponse.parseToMovieList())
+            return Success(movieMapResponse.parseToMovieList(isAdult))
 
         } catch (ex: Exception) {
             return Error(ex)

@@ -3,7 +3,7 @@ package com.example.moviedbjm.network.responses
 import com.example.moviedbjm.BuildConfig
 import com.example.moviedbjm.domain.Movie
 
-fun TmdbCategory.parseToMovieList(): List<Movie> {
+fun TmdbCategory.parseToMovieList(isAdult: Boolean): List<Movie> {
     val movieList: ArrayList<Movie> = arrayListOf()
 
     this.results.let {
@@ -15,10 +15,15 @@ fun TmdbCategory.parseToMovieList(): List<Movie> {
                     releaseDate = tmdbMovie.releaseDate,
                     voteAverage = tmdbMovie.voteAverage,
                     posterPath = "${BuildConfig.IMAGE_BASE_URL}t/p/w342${tmdbMovie.posterPath}",
-                    overview = tmdbMovie.overview
+                    overview = tmdbMovie.overview,
+                    adult = tmdbMovie.adult
                 )
             )
         }
+    }
+
+    if (!isAdult) {
+        return movieList.filter { !it.adult }
     }
 
     return movieList
