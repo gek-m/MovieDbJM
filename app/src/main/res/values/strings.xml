@@ -17,4 +17,8 @@
     <string name="alert_dialog_title">Warning</string>
     <string name="checkbox_adult_text">Include adult in search</string>
     <string name="settings_fragment_title">This is Movie DB Settings</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="grant_permission">Grant</string>
+    <string name="request_permission_text">Permission is needed to show your contacts</string>
+    <string name="denied_permission_text">Too sad, you cannot use contact via this app</string>
 </resources>

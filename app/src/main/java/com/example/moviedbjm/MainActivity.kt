@@ -1,11 +1,18 @@
 package com.example.moviedbjm
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.moviedbjm.databinding.MainActivityBinding
 import com.example.moviedbjm.router.MainRouter
 import com.example.moviedbjm.router.RouterHolder
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
 
@@ -35,31 +42,45 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
                     router.openSettings()
                     return@setOnNavigationItemSelectedListener true
                 }
+                R.id.navigation_contacts -> {
+                    if (ContextCompat.checkSelfPermission(
+                            applicationContext,
+                            Manifest.permission.READ_CONTACTS
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        router.openContacts()
+                    } else {
+                        if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+                            Snackbar.make(
+                                findViewById<View>(R.id.content).rootView,
+                                getString(R.string.request_permission_text),
+                                Snackbar.LENGTH_INDEFINITE
+                            ).setAction(
+                                getString(R.string.grant_permission)
+                            ) {
+                                permissionRequest.launch(Manifest.permission.READ_CONTACTS)
+                            }.show()
+                        } else {
+                            permissionRequest.launch(Manifest.permission.READ_CONTACTS)
+                        }
+                    }
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
             false
         }
     }
 
-    /*private val br: BroadcastReceiver = NetworkChangeReceiver()
-
-    override fun onStart() {
-        super.onStart()
-
-        IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).also {
-            this.registerReceiver(br, it)
+    private val permissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                router.openContacts()
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.denied_permission_text),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        this.unregisterReceiver(br)
-    }*/
-
-    /*private fun loadFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }*/
 }
