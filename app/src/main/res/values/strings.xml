@@ -21,4 +21,8 @@
     <string name="grant_permission">Grant</string>
     <string name="request_permission_text">Permission is needed to show your contacts</string>
     <string name="denied_permission_text">Too sad, you cannot use contact via this app</string>
+    <string name="title_map">Map</string>
+    <string name="default_address">Red Square, 1, Moscow</string>
+    <string name="marker_start">Start</string>
+    <string name="button_map_search">Search</string>
 </resources>

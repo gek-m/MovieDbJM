@@ -66,6 +66,10 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
                     }
                     return@setOnNavigationItemSelectedListener true
                 }
+                R.id.navigation_map -> {
+                    router.openMaps()
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
             false
         }
