@@ -1,42 +1,66 @@
 package com.example.moviedbjm.ui.settings
 
+import android.app.Application
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.moviedbjm.R
 import com.example.moviedbjm.databinding.SettingsFragmentBinding
+import com.example.moviedbjm.storage.MovieStorage
+import com.example.moviedbjm.viewBinding
+import kotlinx.coroutines.flow.collect
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : Fragment(R.layout.settings_fragment) {
 
-    private lateinit var homeViewModel: SettingsViewModel
-    private var _binding: SettingsFragmentBinding? = null
+    private val viewBinding: SettingsFragmentBinding by viewBinding(
+        SettingsFragmentBinding::bind
+    )
 
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        homeViewModel =
-            ViewModelProvider(this).get(SettingsViewModel::class.java)
-
-        _binding = SettingsFragmentBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textSettings
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+    private val viewModel: SettingsViewModel by viewModels {
+        SettingViewModelFactory(requireActivity().application, MovieStorage(requireContext()))
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            viewModel.showSettings()
+        }
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewBinding.checkboxAdult.setOnClickListener {
+            Toast.makeText(requireContext(), "Adult", Toast.LENGTH_SHORT).show()
+            viewModel.isAdultFlagChange()
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.text.collect {
+                viewBinding.textSettings.text = it
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.isAdultFlag.collect {
+                viewBinding.checkboxAdult.isChecked = it
+            }
+        }
+    }
+}
+
+class SettingViewModelFactory(
+    private val application: Application,
+    private val movieStorage: MovieStorage
+) :
+    ViewModelProvider.Factory {
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+        SettingsViewModel(application, movieStorage) as T
 }

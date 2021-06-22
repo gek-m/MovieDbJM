@@ -1,14 +1,18 @@
 package com.example.moviedbjm
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import com.example.moviedbjm.databinding.MainActivityBinding
 import com.example.moviedbjm.router.MainRouter
 import com.example.moviedbjm.router.RouterHolder
-import com.example.moviedbjm.ui.main.MainFragment
-import com.example.moviedbjm.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
 
@@ -31,31 +35,56 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
         navView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
-                    loadFragment(MainFragment())
+                    router.openMovieList()
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_settings -> {
-                    loadFragment(SettingsFragment())
+                    router.openSettings()
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.navigation_contacts -> {
+                    if (ContextCompat.checkSelfPermission(
+                            applicationContext,
+                            Manifest.permission.READ_CONTACTS
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        router.openContacts()
+                    } else {
+                        if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+                            Snackbar.make(
+                                findViewById<View>(R.id.content).rootView,
+                                getString(R.string.request_permission_text),
+                                Snackbar.LENGTH_INDEFINITE
+                            ).setAction(
+                                getString(R.string.grant_permission)
+                            ) {
+                                permissionRequest.launch(Manifest.permission.READ_CONTACTS)
+                            }.show()
+                        } else {
+                            permissionRequest.launch(Manifest.permission.READ_CONTACTS)
+                        }
+                    }
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.navigation_map -> {
+                    router.openMaps()
                     return@setOnNavigationItemSelectedListener true
                 }
             }
             false
         }
-
-        /*val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_settings
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)*/
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
+    private val permissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                router.openContacts()
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.denied_permission_text),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 }
