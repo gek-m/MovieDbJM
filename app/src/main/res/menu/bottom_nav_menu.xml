@@ -6,10 +6,15 @@
         android:icon="@drawable/ic_home_black"
         android:title="@string/title_home" />
 
-    <!--<item
-        android:id="@+id/navigation_favorite"
-        android:icon="@drawable/ic_favorite_black"
-        android:title="@string/title_favorite" />-->
+    <item
+        android:id="@+id/navigation_contacts"
+        android:icon="@drawable/ic_baseline_contacts_24"
+        android:title="@string/title_contacts" />
+
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="@string/title_map" />
 
     <item
         android:id="@+id/navigation_settings"

@@ -12,4 +12,8 @@ interface MovieRepository {
         executor: Executor,
         callback: (result: RepositoryResult<Movie>) -> Unit
     )
+
+    suspend fun getMovieListSuspend(isAdult: Boolean): RepositoryResult<List<Movie>>
+
+    suspend fun getMovieDetailsSuspend(): RepositoryResult<Movie>
 }

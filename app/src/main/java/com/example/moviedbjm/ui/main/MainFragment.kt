@@ -8,15 +8,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviedbjm.R
 import com.example.moviedbjm.databinding.MainFragmentBinding
 import com.example.moviedbjm.domain.MovieRepositoryImpl
-import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.router.RouterHolder
+import com.example.moviedbjm.storage.MovieStorage
+import com.example.moviedbjm.ui.item.DetailsFragment
 import com.example.moviedbjm.viewBinding
 import com.example.moviedbjm.visibleOrGone
+import kotlinx.coroutines.flow.collect
 
 class MainFragment : Fragment(R.layout.main_fragment) {
 
@@ -33,7 +36,10 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     )
 
     private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(requireActivity().application)
+        MainViewModelFactory(
+            application = requireActivity().application,
+            movieStorage = MovieStorage(requireContext())
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,40 +60,39 @@ class MainFragment : Fragment(R.layout.main_fragment) {
 
         viewBinding.swipeRefresh.setOnRefreshListener {
             viewModel.fetchMovies()
-
             viewBinding.swipeRefresh.isRefreshing = false
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner) {
-            val error = it ?: return@observe
-
-            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-
-            with(viewBinding) {
-                topMovieList.visibility = View.GONE
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.loading.collect {
+                viewBinding.progressBar.visibleOrGone(it)
             }
         }
 
-        viewModel.loadingLiveData.observe(viewLifecycleOwner) {
-            viewBinding.progressBar.visibleOrGone(it)
-        }
-
-        viewModel.moviesLiveData.observe(viewLifecycleOwner) {
-            adapter.apply {
-                setData(it)
-                notifyDataSetChanged()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.movies.collect {
+                adapter.apply {
+                    setData(it)
+                    notifyDataSetChanged()
+                }
             }
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.error.collect {
+                val error = it
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
 
-class MainViewModelFactory(private val application: Application) :
+class MainViewModelFactory(
+    private val application: Application,
+    private val movieStorage: MovieStorage
+) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        MainViewModel(application, MovieRepositoryImpl()) as T
+        MainViewModel(application, MovieRepositoryImpl(), movieStorage) as T
 }

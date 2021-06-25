@@ -1,48 +1,58 @@
 package com.example.moviedbjm.ui.main
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.moviedbjm.R
 import com.example.moviedbjm.domain.Movie
 import com.example.moviedbjm.domain.MovieRepositoryImpl
 import com.example.moviedbjm.domain.Success
-import java.util.concurrent.Executors
+import com.example.moviedbjm.storage.MovieStorage
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val app: Application,
-    private val repository: MovieRepositoryImpl
+    private val repository: MovieRepositoryImpl,
+    private val movieStorage: MovieStorage
 ) : ViewModel() {
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val _loading = MutableStateFlow(false)
+    private val _error = MutableSharedFlow<String>()
+    private val _movies = MutableStateFlow<List<Movie>>(listOf())
+    private val _isAdultFlag = MutableStateFlow(movieStorage.isAdultFlag)
 
-    private val _loadingLiveData = MutableLiveData(false)
-    private val _errorLiveData = MutableLiveData<String?>()
-    private val _moviesLiveData = MutableLiveData<List<Movie>>()
-
-    val loadingLiveData: LiveData<Boolean> = _loadingLiveData
-    val errorLiveData: LiveData<String?> = _errorLiveData
-    val moviesLiveData: LiveData<List<Movie>> = _moviesLiveData
+    val loading: Flow<Boolean> = _loading
+    val error: Flow<String> = _error
+    val movies: Flow<List<Movie>> = _movies
+    val isAdultFlag: Flow<Boolean> = _isAdultFlag
 
     fun fetchMovies() {
 
-        _loadingLiveData.value = true
+        _loading.value = true
 
-        repository.getMovieList(executor) {
-            when (it) {
+        if(_isAdultFlag.value) {
+            Toast.makeText(app.applicationContext, "Adult", Toast.LENGTH_SHORT).show()
+        }
+
+        viewModelScope.launch {
+            val result = repository.getMovieListSuspend(_isAdultFlag.value)
+
+            _loading.value = false
+
+            when (result) {
                 is Success -> {
-                    val result: List<Movie> = it.value
-                    _moviesLiveData.value = result
-                    _errorLiveData.value = null
+                    _movies.value = result.value
                 }
 
                 is Error -> {
-                    _errorLiveData.value = app.getString(R.string.error_text)
+                    _error.emit(app.getString(R.string.api_load_error))
                 }
             }
-
-            _loadingLiveData.value = false
         }
     }
 }
