@@ -25,4 +25,6 @@
     <string name="default_address">Red Square, 1, Moscow</string>
     <string name="marker_start">Start</string>
     <string name="button_map_search">Search</string>
+    <string name="notification_channel_name">Messaging Channel</string>
+    <string name="notification_channel_description">Some mega channel description</string>
 </resources>

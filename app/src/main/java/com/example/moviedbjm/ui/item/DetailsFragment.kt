@@ -54,7 +54,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.error.collect {
-                if (it != null) {
+                it?.let {
                     viewBinding.retry.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 }

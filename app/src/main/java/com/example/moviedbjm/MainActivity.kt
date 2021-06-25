@@ -8,7 +8,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.moviedbjm.databinding.MainActivityBinding
+import com.example.moviedbjm.fcm.FcmRepository
 import com.example.moviedbjm.router.MainRouter
 import com.example.moviedbjm.router.RouterHolder
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,11 +22,19 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), RouterHolder {
 
     private lateinit var binding: MainActivityBinding
 
+    private lateinit var fcmRepository: FcmRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
             router.openMovieList()
+        }
+
+        val fcmRepository = FcmRepository()
+        lifecycleScope.launchWhenStarted {
+            val token = fcmRepository.getToken()
+            token.toString()
         }
 
         binding = MainActivityBinding.inflate(layoutInflater)

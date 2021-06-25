@@ -43,7 +43,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback {
         mapFragment?.getMapAsync(callback)
     }
 
-    override fun onMapReady(p0: GoogleMap) {
-        mMap = p0
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
     }
 }
